@@ -257,7 +257,7 @@
           <div class="number">Core Program</div>
           <h3>The Complete Lookmaxing Academy</h3>
           <p>Structured modules with lessons, video learning and progress tracking.</p>
-          <div class="course-meta"><div class="price">₹2,999</div><button class="btn" onclick="openAdmission()">Join</button></div>
+          <div class="course-meta"><div class="price">Membership price</div><button class="btn" onclick="openAdmission()">Join</button></div>
         </div>
         <div class="card">
           <div class="number">Included</div>
@@ -322,7 +322,7 @@
             </div>
             <div class="form-row">
               <label>City<input id="city" required placeholder="City" /></label>
-              <label>Plan<select id="plan"><option>Academy Membership — ₹2,999</option></select></label>
+              <label>Plan<select id="plan"><option>Academy Membership — Membership price</option></select></label>
             </div>
             <label>What are you looking to improve?<textarea id="goal" rows="3" placeholder="Optional"></textarea></label>
             <button class="btn" type="submit">Proceed to Transaction</button>
@@ -411,8 +411,8 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const ADMIN_PHONE = "9901841353";
-  const ADMIN_PASSWORD = "kxmbit26"; // change before production
+  const ADMIN_PHONE = "";
+  const ADMIN_PASSWORD = "";
   const STORAGE_KEY = "zayn_lookmaxxing";
   const DB_NAME = "zaynAcademyVideos";
   const DB_STORE = "videos";
@@ -452,9 +452,9 @@
     };
     openModal(`
       <div class="modal-top"><div><div class="eyebrow">Transaction</div><h3 style="font-size:28px;margin:6px 0">Complete your payment</h3></div><button class="close" onclick="closeModal()">×</button></div>
-      <div class="notice" style="margin:18px 0">Academy Membership · <strong>₹2,999</strong></div>
+      <div class="notice" style="margin:18px 0">Academy Membership · <strong>Membership price</strong></div>
       <div style="display:grid;gap:10px">
-        <button class="btn" onclick='completePayment(${JSON.stringify(data)})'>Pay ₹2,999 (Demo)</button>
+        <button class="btn" onclick='completePayment(${JSON.stringify(data)})'>Pay Membership price (Demo)</button>
         <button class="btn btn-dark" onclick="closeModal()">Back</button>
       </div>
       <div class="legal" style="margin-top:14px">Online payment is handled through the configured payment gateway.</div>
@@ -661,5 +661,6 @@
   if(state.current?.role==="member") showMember();
   if(state.current?.role==="admin") showAdmin();
 </script>
+<script src="production.js"></script>
 </body>
 </html>
