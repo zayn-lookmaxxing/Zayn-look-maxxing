@@ -1,12 +1,665 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zayn's Look Maxxing</title><meta name="description" content="Build your dream face."><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"><link rel="stylesheet" href="styles.css"></head><body>
-<header class="nav"><a class="brand" href="#">ZAYN<span>’S</span></a><div class="links"><a href="#method">Method</a><a href="#curriculum">Curriculum</a><a href="#results">Results</a></div><button class="btn lime" id="loginBtn">Member login</button></header>
-<main id="public"><section class="hero wrap"><div><small>LOOK MAXXING / PRIVATE MEMBERSHIP</small><h1>Build your<br><em>dream face.</em></h1><p>A structured system for grooming, skin, hair, style, habits and presentation — taught through focused lessons you can actually follow.</p><div class="actions"><button class="btn lime" id="joinBtn">Start your transformation</button><a class="btn" href="#curriculum">Explore the system ↗</a></div></div><div class="hero-card"><b>LOOK<br>MAXXING<br>SYSTEM</b></div></section>
-<section id="method" class="section wrap"><small>01 / METHOD</small><h2>The system.</h2><div class="cards"><article><b>01</b><h3>Foundation</h3><p>Build the essentials and understand your starting point.</p></article><article><b>02</b><h3>Grooming</h3><p>Skin, hair and the details that sharpen presentation.</p></article><article><b>03</b><h3>Style</h3><p>Fit, proportions, wardrobe and personal image.</p></article><article><b>04</b><h3>Presence</h3><p>Habits, posture and consistency.</p></article></div></section>
-<section id="curriculum" class="section dark"><div class="wrap"><small>02 / CURRICULUM</small><h2>Inside the membership.</h2><div class="modules"><div><i>01</i><strong>Foundation</strong><span>Starting point · routine · fundamentals</span></div><div><i>02</i><strong>Skin & Hair</strong><span>Grooming · maintenance · presentation</span></div><div><i>03</i><strong>Face & Presentation</strong><span>Features · grooming · framing</span></div><div><i>04</i><strong>Style</strong><span>Fit · wardrobe · personal image</span></div><div><i>05</i><strong>Lifestyle</strong><span>Habits · consistency · refinement</span></div></div></div></section>
-<section id="results" class="section wrap"><small>03 / RESULTS</small><h2>The goal is visible.</h2><div class="wall"><div>BEFORE / AFTER</div><div>PROGRESS</div><div>ROUTINE</div><div>RESULT</div></div></section>
-<section class="offer wrap"><div><small>MEMBERSHIP</small><h2>Build your system.</h2><p>Private lessons, protected course access and automatic progress tracking.</p></div><div class="price"><span>COMPLETE PROGRAM</span><strong>₹2,999</strong><small>One-time course access</small><button class="btn lime" id="offerBtn">Join the academy</button></div></section></main>
-<section id="student" class="app hidden"><div class="wrap"><div class="app-head"><div><small>MEMBER AREA</small><h1>Welcome<span id="studentName">.</span></h1></div><button class="btn" id="logoutStudent">Log out</button></div><div class="panel"><div class="row"><small>YOUR PROGRESS</small><b id="pct">0%</b></div><div class="progress"><i id="bar"></i></div><p id="progressText">Loading course…</p></div><div class="panel"><small>COURSE LIBRARY</small><h2>The Complete Lookmaxxing Academy</h2><div id="lessonList"></div></div></div></section>
-<section id="admin" class="app hidden"><div class="wrap"><div class="app-head"><div><small>PRIVATE ADMIN</small><h1>Zayn’s Studio.</h1></div><button class="btn" id="logoutAdmin">Log out</button></div><div class="stats"><div class="panel"><small>STUDENTS</small><h2 id="studentCount">—</h2><p>Payment and account status.</p></div><div class="panel"><small>COURSE</small><h2>CMS</h2><p>Modules, lessons and progress.</p></div></div><div class="panel"><small>LESSON MANAGEMENT</small><h2>Add lesson</h2><form id="lessonForm"><input id="lessonTitle" placeholder="Lesson title" required><input id="moduleTitle" placeholder="Module" required><textarea id="lessonDesc" placeholder="Description"></textarea><button class="btn lime">Save lesson</button><p class="note">Large video files will be stored in private video storage, not GitHub.</p></form></div></div></section>
-<footer><span>ZAYN’S LOOK MAXXING</span><span>PRIVATE LEARNING PLATFORM</span></footer>
-<div id="modal" class="modal hidden"><div class="modal-box"><button id="closeModal" class="close">×</button><div id="modalBody"></div></div></div><div id="toast" class="toast hidden"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Zayn's Look Maxxing — Build Your Dream Face.</title>
+<meta name="description" content="Zayn's Look Maxxing — a premium members-only lookmaxxing education platform." />
+<style>
+  :root{
+    --bg:#090a0c;
+    --panel:#121418;
+    --panel-2:#181b20;
+    --text:#f5f2ea;
+    --muted:#8e949e;
+    --gold:#b8f03a;
+    --gold-2:#d9ff85;
+    --line:rgba(255,255,255,.09);
+    --green:#6ee7a0;
+    --red:#ef7373;
+    --shadow:0 30px 80px rgba(0,0,0,.35);
+    --radius:22px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 80% 0%, rgba(184,240,58,.10), transparent 28%),
+      radial-gradient(circle at 0% 30%, rgba(255,255,255,.035), transparent 25%),
+      var(--bg);
+    color:var(--text);
+    font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height:1.5;
+  }
+  button,input,select,textarea{font:inherit}
+  button{cursor:pointer}
+  a{text-decoration:none;color:inherit}
+  .container{width:min(1180px,92%);margin:auto}
+  .nav{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(18px);
+    background:rgba(8,9,11,.78);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{height:76px;display:flex;align-items:center;justify-content:space-between}
+  .brand{letter-spacing:.34em;font-size:13px;font-weight:800}
+  .nav-links{display:flex;gap:24px;color:#b8bcc5;font-size:13px}
+  .nav-links a:hover{color:#fff}
+  .btn{
+    border:1px solid var(--line);
+    color:#0b0b0b;
+    background:var(--gold);
+    padding:12px 18px;
+    border-radius:999px;
+    font-weight:800;
+    font-size:13px;
+    transition:.25s;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(184,240,58,.20)}
+  .btn-ghost{background:transparent;color:#fff}
+  .btn-dark{background:#191c22;color:#fff}
+  .btn-danger{background:rgba(239,115,115,.10);color:#ffb1b1;border-color:rgba(239,115,115,.18)}
+  .hero{padding:95px 0 80px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+  .eyebrow{color:var(--gold-2);text-shadow:0 0 18px rgba(184,240,58,.10);font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:800}
+  h1{font-size:clamp(48px,7vw,88px);line-height:.96;letter-spacing:-.055em;margin:18px 0 22px;max-width:760px}
+  .hero p{font-size:18px;color:#bcc1ca;max-width:620px}
+  .hero-ctas{display:flex;gap:12px;flex-wrap:wrap;margin:30px 0 35px}
+  .stats{display:flex;gap:28px;flex-wrap:wrap}
+  .stat strong{display:block;font-size:22px}.stat span{font-size:12px;color:var(--muted)}
+  .photo-space{
+    min-height:500px;border-radius:30px;border:1px solid var(--line);
+    background:
+      linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.01)),
+      radial-gradient(circle at 70% 30%, rgba(184,240,58,.13), transparent 28%),
+      #111419;
+    display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;box-shadow:var(--shadow);
+  }
+  .photo-space:before{content:"PHOTO";font-weight:900;letter-spacing:.3em;color:rgba(245,242,234,.18);font-size:42px}
+  .photo-space small{position:absolute;bottom:20px;left:22px;color:#747a84;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  section{padding:90px 0}
+  .section-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:35px}
+  .section-head h2{margin:8px 0 0;font-size:clamp(34px,4vw,54px);letter-spacing:-.04em}
+  .section-head p{max-width:520px;color:var(--muted)}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .card{
+    background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));
+    border:1px solid var(--line);border-radius:var(--radius);padding:24px;
+    box-shadow:0 15px 40px rgba(0,0,0,.15);
+  }
+  .card h3{margin:0 0 8px}.card p{color:var(--muted);font-size:14px}
+  .number{font-size:11px;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;font-weight:800}
+  .feature-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .course-card{display:flex;flex-direction:column;min-height:330px}
+  .course-card .thumb{height:170px;border-radius:16px;border:1px solid var(--line);margin-bottom:18px;background:linear-gradient(135deg,#1a1e23,#0a0c0f);display:flex;align-items:center;justify-content:center;color:#737984;font-size:12px;letter-spacing:.18em}
+  .course-meta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .price{font-size:24px;font-weight:900}
+  .result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .result-grid .photo-space{min-height:230px;border-radius:18px;box-shadow:none}
+  .result-grid .photo-space:before{font-size:24px;color:rgba(245,242,234,.16)}
+  .quote{font-size:21px;max-width:860px;color:#ece8df}
+  .admission-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:20px}
+  form{display:grid;gap:14px}
+  label{font-size:12px;color:#b9bec8;display:grid;gap:7px}
+  input,select,textarea{
+    width:100%;padding:13px 14px;border-radius:13px;border:1px solid var(--line);
+    background:#0d0f12;color:#fff;outline:none;
+  }
+  input:focus,select:focus,textarea:focus{border-color:rgba(184,240,58,.65)}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .legal{font-size:11px;color:#747a84}
+  .modal{
+    position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:20px;z-index:100;
+  }
+  .modal.open{display:flex}
+  .modal-card{width:min(560px,100%);background:#101317;border:1px solid var(--line);border-radius:24px;padding:26px;box-shadow:var(--shadow)}
+  .modal-top{display:flex;justify-content:space-between;align-items:center}
+  .close{background:transparent;color:#999;border:0;font-size:22px}
+  .notice{padding:13px 14px;border-radius:14px;background:#12151a;border:1px solid var(--line);font-size:13px;color:#bfc4cd}
+  .success{border-color:rgba(87,213,139,.28);background:rgba(87,213,139,.07)}
+  .error{border-color:rgba(239,115,115,.28);background:rgba(239,115,115,.07)}
+  .dashboard{display:none;padding:50px 0 90px}
+  .dashboard.active{display:block}
+  .dash-top{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:30px}
+  .dash-top h2{margin:6px 0 0;font-size:48px;letter-spacing:-.04em}
+  .progress{height:8px;background:#1a1d22;border-radius:20px;overflow:hidden}
+  .progress span{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#d9ff85);width:42%}
+  .lesson{display:flex;gap:15px;align-items:center;padding:16px;border-top:1px solid var(--line)}
+  .lesson:first-child{border-top:0}
+  .lesson-thumb{width:120px;height:72px;border-radius:12px;border:1px solid var(--line);background:linear-gradient(135deg,#1a1d22,#121418);display:flex;align-items:center;justify-content:center;color:#777;font-size:10px;letter-spacing:.12em}
+  .lesson-main{flex:1}
+  .lesson-main strong{display:block}.lesson-main span{font-size:12px;color:var(--muted)}
+  .pill{display:inline-flex;padding:5px 8px;border:1px solid var(--line);border-radius:999px;font-size:10px;color:#b7bdc7;margin-left:6px}
+  .admin{display:none;padding:50px 0 90px}
+  .admin.active{display:block}
+  .admin-header{display:flex;justify-content:space-between;align-items:end;margin-bottom:28px}
+  .admin-header h2{font-size:48px;margin:5px 0;letter-spacing:-.04em}
+  .admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .video-list{margin-top:15px;display:grid;gap:10px}
+  .video-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:13px;border-radius:14px;background:#111419;border:1px solid var(--line)}
+  .video-item small{display:block;color:var(--muted)}
+  .video-actions{display:flex;gap:8px}
+  .footer{border-top:1px solid var(--line);padding:30px 0;color:#707781;font-size:12px}
+  .hidden{display:none!important}
+  .toast{position:fixed;right:18px;bottom:18px;background:#14171d;border:1px solid var(--line);padding:13px 16px;border-radius:14px;display:none;z-index:200}
+  .toast.show{display:block}
+  @media(max-width:900px){
+    .hero-grid,.admission-wrap,.feature-row,.admin-grid{grid-template-columns:1fr}
+    .grid-3{grid-template-columns:1fr}
+    .result-grid{grid-template-columns:repeat(2,1fr)}
+    .nav-links{display:none}
+    .hero{padding-top:60px}
+  }
+  @media(max-width:600px){
+    h1{font-size:52px}.result-grid{grid-template-columns:1fr 1fr}.form-row{grid-template-columns:1fr}
+    .dash-top,.section-head{align-items:flex-start;flex-direction:column}
+    .photo-space{min-height:360px}.lesson-thumb{width:88px;height:60px}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <div class="brand">ZAYN ACADEMY</div>
+    <div class="nav-links">
+      <a href="#story">Story</a>
+      <a href="#learn">Academy</a>
+      <a href="#results">Results</a>
+      <a href="#admission">Admission</a>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" id="memberLoginBtn">Member Login</button>
+      <button class="btn" id="joinBtn">Join Academy</button>
+    </div>
+  </div>
+</nav>
+
+<main id="publicSite">
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="eyebrow">Zayn's Look Maxxing · Members Only</div>
+        <h1>Look Better.<br/>Build Confidence.<br/><span style="color:var(--gold-2)">Become Better.</span></h1>
+        <p>A structured academy for people who want practical guidance across grooming, style, appearance, habits and self-improvement.</p>
+        <div class="hero-ctas">
+          <button class="btn" id="heroJoin">Start Your Transformation</button>
+          <a class="btn btn-dark" href="#learn">Explore The Academy</a>
+        </div>
+        <div class="stats">
+          <div class="stat"><strong>50+</strong><span>Lessons planned</span></div>
+          <div class="stat"><strong>5</strong><span>Core modules</span></div>
+          <div class="stat"><strong>24/7</strong><span>Member access</span></div>
+        </div>
+      </div>
+      <div class="photo-space">
+        <small>Hero image space — add Zayn's official portrait here</small>
+      </div>
+    </div>
+  </section>
+
+  <section id="story">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">01 · The Story</div>
+          <h2>A transformation built on learning.</h2>
+        </div>
+        <p>Zayn's story is presented as the human foundation behind the academy. Replace the photo spaces with Zayn's approved images when ready.</p>
+      </div>
+      <div class="feature-row">
+        <div class="card">
+          <div class="number">Before</div>
+          <div class="photo-space" style="min-height:300px;margin-top:15px"><small>Transformation photo space</small></div>
+        </div>
+        <div class="card">
+          <div class="number">After</div>
+          <div class="photo-space" style="min-height:300px;margin-top:15px"><small>Transformation photo space</small></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <p class="quote">“I learned what actually moves the needle, tested it on myself, and built a structured system so you don't have to figure everything out alone.”</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="learn">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">02 · The Academy</div>
+          <h2>What you’ll learn.</h2>
+        </div>
+        <p>One membership. One structured path. Lessons can be expanded or replaced from Zayn's private admin area.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card"><div class="number">01</div><h3>Skin & Hair</h3><p>Routines, grooming fundamentals and practical maintenance.</p></div>
+        <div class="card"><div class="number">02</div><h3>Style & Fashion</h3><p>Fit, presentation, wardrobe decisions and personal style.</p></div>
+        <div class="card"><div class="number">03</div><h3>Nutrition & Fitness</h3><p>Foundational lifestyle habits that support appearance and confidence.</p></div>
+        <div class="card"><div class="number">04</div><h3>Face & Presentation</h3><p>Presentation, grooming and appearance-focused education.</p></div>
+        <div class="card"><div class="number">05</div><h3>Mindset & Discipline</h3><p>Consistency, habits and building a repeatable routine.</p></div>
+        <div class="card"><div class="number">06</div><h3>Lifestyle</h3><p>Daily systems designed to help members stay consistent.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head">
+        <div><div class="eyebrow">03 · Curriculum</div><h2>Inside the membership.</h2></div>
+        <p>The course is shown as a premium learning product, not a generic blog.</p>
+      </div>
+      <div class="grid-2">
+        <div class="card course-card">
+          <div class="thumb">COURSE COVER</div>
+          <div class="number">Core Program</div>
+          <h3>The Complete Lookmaxing Academy</h3>
+          <p>Structured modules with lessons, video learning and progress tracking.</p>
+          <div class="course-meta"><div class="price">₹2,999</div><button class="btn" onclick="openAdmission()">Join</button></div>
+        </div>
+        <div class="card">
+          <div class="number">Included</div>
+          <h3>Member access</h3>
+          <p>Private dashboard, protected lessons, progress tracking and future content updates.</p>
+          <div style="display:grid;gap:9px;margin-top:20px">
+            <div class="notice">✓ Full course access</div>
+            <div class="notice">✓ New lessons can be added by Zayn</div>
+            <div class="notice">✓ Member-only video library</div>
+            <div class="notice">✓ Personal login</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="results">
+    <div class="container">
+      <div class="section-head">
+        <div><div class="eyebrow">04 · Results</div><h2>Real people. Real progress.</h2></div>
+        <p>These are intentionally photo-only spaces so the final website can use authentic approved member/result photography.</p>
+      </div>
+      <div class="result-grid">
+        <div class="photo-space"><small>Result photo</small></div>
+        <div class="photo-space"><small>Result photo</small></div>
+        <div class="photo-space"><small>Result photo</small></div>
+        <div class="photo-space"><small>Result photo</small></div>
+        <div class="photo-space"><small>Result photo</small></div>
+        <div class="photo-space"><small>Result photo</small></div>
+        <div class="photo-space"><small>Result photo</small></div>
+        <div class="photo-space"><small>Result photo</small></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="admission">
+    <div class="container">
+      <div class="section-head">
+        <div><div class="eyebrow">05 · Admission</div><h2>Enter the academy.</h2></div>
+        <p>Fill in your details, proceed to transaction, then receive member credentials.</p>
+      </div>
+      <div class="admission-wrap">
+        <div class="card">
+          <div class="number">Membership</div>
+          <h3 style="font-size:32px">Zayn's Look Maxxing</h3>
+          <p>One membership unlocks the complete learning environment.</p>
+          <div style="margin-top:22px">
+            <div class="notice">Lifetime course access</div>
+            <div class="notice" style="margin-top:9px">Member-only video library</div>
+            <div class="notice" style="margin-top:9px">Future lesson updates</div>
+          </div>
+        </div>
+        <div class="card">
+          <form id="admissionForm">
+            <div class="form-row">
+              <label>Full name<input id="fullName" required placeholder="Your full name" /></label>
+              <label>Phone number<input id="phone" required inputmode="tel" placeholder="+91..." /></label>
+            </div>
+            <div class="form-row">
+              <label>Email<input id="email" type="email" required placeholder="you@example.com" /></label>
+              <label>Age<input id="age" type="number" min="13" max="80" required placeholder="18" /></label>
+            </div>
+            <div class="form-row">
+              <label>City<input id="city" required placeholder="City" /></label>
+              <label>Plan<select id="plan"><option>Academy Membership — ₹2,999</option></select></label>
+            </div>
+            <label>What are you looking to improve?<textarea id="goal" rows="3" placeholder="Optional"></textarea></label>
+            <button class="btn" type="submit">Proceed to Transaction</button>
+            <div class="legal">Secure payment will be connected through the configured payment gateway.</div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<section id="memberArea" class="dashboard">
+  <div class="container">
+    <div class="dash-top">
+      <div>
+        <div class="eyebrow">Member Area</div>
+        <h2>Welcome back.</h2>
+        <div id="memberWelcome" style="color:var(--muted)">Your private academy dashboard.</div>
+      </div>
+      <button class="btn btn-ghost" onclick="logout()">Logout</button>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="number">Your Progress</div>
+        <h3 style="font-size:28px">Keep going.</h3>
+        <div class="progress"><span></span></div>
+        <p style="color:var(--muted);font-size:12px;margin-top:9px">42% completed</p>
+      </div>
+      <div class="card">
+        <div class="number">Membership</div>
+        <h3 style="font-size:28px">Active</h3>
+        <p>Course access is available from this account.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <div class="number">Course Library</div>
+      <h3>The Complete Lookmaxing Academy</h3>
+      <div id="memberLessonList"></div>
+    </div>
+  </div>
+</section>
+
+<section id="adminArea" class="admin">
+  <div class="container">
+    <div class="admin-header">
+      <div>
+        <div class="eyebrow">Private Admin</div>
+        <h2>Zayn's Studio.</h2>
+        <div style="color:var(--muted)">Video management only · Private admin access</div>
+      </div>
+      <button class="btn btn-ghost" onclick="logout()">Logout</button>
+    </div>
+    <div class="notice">Only the admin area contains video upload/delete controls. Member accounts do not have access to these controls.</div>
+    <div class="admin-grid" style="margin-top:18px">
+      <div class="card">
+        <div class="number">Upload Video</div>
+        <h3>Add a lesson</h3>
+        <form id="videoForm">
+          <label>Lesson title<input id="videoTitle" required placeholder="Lesson 01 — Foundations" /></label>
+          <label>Module<select id="videoModule"><option>Module 01 — Foundation</option><option>Module 02 — Grooming</option><option>Module 03 — Skin & Hair</option><option>Module 04 — Style</option><option>Module 05 — Advanced</option></select></label>
+          <label>Video file<input id="videoFile" type="file" accept="video/*" required /></label>
+          <button class="btn" type="submit">Upload to this browser</button>
+          <div class="legal">Course videos are managed through the private admin area and will use secure cloud video storage.</div>
+        </form>
+      </div>
+      <div class="card">
+        <div class="number">Published lessons</div>
+        <h3>Video library</h3>
+        <div id="adminVideoList" class="video-list"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container" style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap">
+    <div>© <span id="year"></span> Zayn's Look Maxxing</div>
+    <div>Private membership learning platform</div>
+  </div>
+</footer>
+
+<div class="modal" id="modal">
+  <div class="modal-card" id="modalCard"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  const ADMIN_PHONE = "9901841353";
+  const ADMIN_PASSWORD = "kxmbit26"; // change before production
+  const STORAGE_KEY = "zayn_lookmaxxing";
+  const DB_NAME = "zaynAcademyVideos";
+  const DB_STORE = "videos";
+
+  const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"members":[],"current":null}');
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  function toast(msg){
+    const el=document.getElementById("toast"); el.textContent=msg; el.classList.add("show");
+    setTimeout(()=>el.classList.remove("show"),2400);
+  }
+  function openModal(html){
+    document.getElementById("modalCard").innerHTML=html;
+    document.getElementById("modal").classList.add("open");
+  }
+  function closeModal(){ document.getElementById("modal").classList.remove("open"); }
+  document.getElementById("modal").addEventListener("click", e=>{ if(e.target.id==="modal") closeModal(); });
+
+  function openAdmission(){
+    document.getElementById("admission").scrollIntoView({behavior:"smooth"});
+    closeModal();
+  }
+
+  document.getElementById("joinBtn").onclick=openAdmission;
+  document.getElementById("heroJoin").onclick=openAdmission;
+
+  document.getElementById("admissionForm").addEventListener("submit", e=>{
+    e.preventDefault();
+    const data={
+      fullName:document.getElementById("fullName").value.trim(),
+      phone:document.getElementById("phone").value.trim(),
+      email:document.getElementById("email").value.trim(),
+      age:document.getElementById("age").value,
+      city:document.getElementById("city").value.trim(),
+      goal:document.getElementById("goal").value.trim()
+    };
+    openModal(`
+      <div class="modal-top"><div><div class="eyebrow">Transaction</div><h3 style="font-size:28px;margin:6px 0">Complete your payment</h3></div><button class="close" onclick="closeModal()">×</button></div>
+      <div class="notice" style="margin:18px 0">Academy Membership · <strong>₹2,999</strong></div>
+      <div style="display:grid;gap:10px">
+        <button class="btn" onclick='completePayment(${JSON.stringify(data)})'>Pay ₹2,999 (Demo)</button>
+        <button class="btn btn-dark" onclick="closeModal()">Back</button>
+      </div>
+      <div class="legal" style="margin-top:14px">Online payment is handled through the configured payment gateway.</div>
+    `);
+  });
+
+  function makeCredentials(fullName){
+    const clean=(fullName||"member").toLowerCase().replace(/[^a-z0-9]+/g,"").slice(0,10) || "member";
+    const num=Math.floor(1000+Math.random()*9000);
+    const password="Nithin";
+    return {username:`${clean}_${num}`,password};
+  }
+
+  function completePayment(data){
+    const creds=makeCredentials(data.fullName);
+    const member={...data,...creds,role:"member",active:true,createdAt:new Date().toISOString()};
+    state.members.push(member); state.current={role:"member",username:member.username}; saveState();
+    openModal(`
+      <div class="modal-top"><div><div class="eyebrow">Payment Successful</div><h3 style="font-size:28px;margin:6px 0">Welcome to Zayn's Look Maxxing.</h3></div><button class="close" onclick="closeModal()">×</button></div>
+      <div class="notice success" style="margin:18px 0">
+        Your membership has been activated.<br/><br/>
+        <strong>Username:</strong> ${member.username}<br/>
+        <strong>Password:</strong> ${member.password}
+      </div>
+      <button class="btn" style="width:100%" onclick="closeModal();showMember()">Enter Academy</button>
+      <div class="legal" style="margin-top:14px">Save these credentials. Your account is managed securely through the platform.</div>
+    `);
+  }
+
+  document.getElementById("memberLoginBtn").onclick=()=>openModal(`
+    <div class="modal-top"><div><div class="eyebrow">Member Login</div><h3 style="font-size:28px;margin:6px 0">Welcome back.</h3></div><button class="close" onclick="closeModal()">×</button></div>
+    <form id="memberLoginForm" style="margin-top:18px">
+      <label>Username<input id="loginUser" required placeholder="your_username" /></label>
+      <label>Password<input id="loginPass" type="password" required placeholder="Your password" /></label>
+      <button class="btn" type="submit">Enter Academy</button>
+      <button class="btn btn-dark" type="button" onclick="closeModal()">Close</button>
+    </form>
+    <div class="legal">New member? Complete admission + payment first.</div>
+  `);
+  setTimeout(()=>{
+    const f=document.getElementById("memberLoginForm");
+    if(f) f.addEventListener("submit", e=>{
+      e.preventDefault();
+      const u=document.getElementById("loginUser").value.trim();
+      const p=document.getElementById("loginPass").value;
+      const m=state.members.find(x=>x.username===u && x.password===p && x.active);
+      if(!m){ alert("Invalid member credentials."); return; }
+      state.current={role:"member",username:m.username}; saveState(); closeModal(); showMember();
+    });
+  },0);
+
+  function showMember(){
+    document.getElementById("publicSite").style.display="none";
+    document.getElementById("memberArea").classList.add("active");
+    document.getElementById("adminArea").classList.remove("active");
+    const m=state.members.find(x=>x.username===state.current?.username);
+    document.getElementById("memberWelcome").textContent=m ? `${m.fullName}, your private academy dashboard is ready.` : "Your private academy dashboard.";
+    loadMemberLessons();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function showAdmin(){
+    document.getElementById("publicSite").style.display="none";
+    document.getElementById("memberArea").classList.remove("active");
+    document.getElementById("adminArea").classList.add("active");
+    loadAdminVideos(); window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function logout(){
+    state.current=null; saveState();
+    document.getElementById("publicSite").style.display="block";
+    document.getElementById("memberArea").classList.remove("active");
+    document.getElementById("adminArea").classList.remove("active");
+    window.scrollTo({top:0,behavior:"smooth"});
+    toast("Logged out.");
+  }
+
+  // Hidden admin access: press Shift + A, or use URL #admin.
+  window.addEventListener("keydown", e=>{
+    if(e.shiftKey && e.key.toLowerCase()==="a") openAdminLogin();
+  });
+  if(location.hash==="#admin") setTimeout(openAdminLogin,300);
+
+  function openAdminLogin(){
+    openModal(`
+      <div class="modal-top"><div><div class="eyebrow">Private Admin</div><h3 style="font-size:28px;margin:6px 0">Zayn only.</h3></div><button class="close" onclick="closeModal()">×</button></div>
+      <form id="adminLoginForm" style="margin-top:18px">
+        <label>Admin number<input id="adminPhone" inputmode="tel" value="${ADMIN_PHONE}" required /></label>
+        <label>Private password<input id="adminPass" type="password" required /></label>
+        <button class="btn" type="submit">Open Admin</button>
+      </form>
+      <div class="legal">Admin access is separate from member access. Members never receive these controls.</div>
+    `);
+    setTimeout(()=>{
+      const f=document.getElementById("adminLoginForm");
+      f.addEventListener("submit",e=>{
+        e.preventDefault();
+        if(document.getElementById("adminPhone").value.trim()!==ADMIN_PHONE || document.getElementById("adminPass").value!==ADMIN_PASSWORD){
+          alert("Invalid admin credentials."); return;
+        }
+        state.current={role:"admin"}; saveState(); closeModal(); showAdmin();
+      });
+    },0);
+  }
+
+  function openDB(){
+    return new Promise((resolve,reject)=>{
+      const req=indexedDB.open(DB_NAME,1);
+      req.onupgradeneeded=()=>req.result.createObjectStore(DB_STORE,{keyPath:"id"});
+      req.onsuccess=()=>resolve(req.result);
+      req.onerror=()=>reject(req.error);
+    });
+  }
+  async function dbPut(video){
+    const db=await openDB();
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(DB_STORE,"readwrite");
+      tx.objectStore(DB_STORE).put(video);
+      tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error);
+    });
+  }
+  async function dbGetAll(){
+    const db=await openDB();
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(DB_STORE,"readonly");
+      const req=tx.objectStore(DB_STORE).getAll();
+      req.onsuccess=()=>resolve(req.result); req.onerror=()=>reject(req.error);
+    });
+  }
+  async function dbDelete(id){
+    const db=await openDB();
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(DB_STORE,"readwrite");
+      tx.objectStore(DB_STORE).delete(id);
+      tx.oncomplete=resolve; tx.onerror=()=>reject(tx.error);
+    });
+  }
+
+  document.getElementById("videoForm").addEventListener("submit",async e=>{
+    e.preventDefault();
+    const file=document.getElementById("videoFile").files[0];
+    if(!file) return;
+    const id=crypto.randomUUID();
+    await dbPut({
+      id,
+      title:document.getElementById("videoTitle").value.trim(),
+      module:document.getElementById("videoModule").value,
+      mime:file.type,
+      name:file.name,
+      blob:file,
+      createdAt:new Date().toISOString()
+    });
+    e.target.reset(); toast("Video added to the course library."); loadAdminVideos(); loadMemberLessons();
+  });
+
+  async function loadAdminVideos(){
+    const wrap=document.getElementById("adminVideoList");
+    const videos=await dbGetAll();
+    if(!videos.length){ wrap.innerHTML=`<div class="notice">No uploaded videos yet.</div>`; return; }
+    wrap.innerHTML=videos.map(v=>`
+      <div class="video-item">
+        <div><strong>${escapeHtml(v.title)}</strong><small>${escapeHtml(v.module)} · ${escapeHtml(v.name)}</small></div>
+        <div class="video-actions"><button class="btn btn-danger" onclick="deleteVideo('${v.id}')">Delete</button></div>
+      </div>`).join("");
+  }
+  async function deleteVideo(id){
+    if(!confirm("Delete this video from the course library.")) return;
+    await dbDelete(id); loadAdminVideos(); loadMemberLessons(); toast("Video deleted.");
+  }
+
+  async function loadMemberLessons(){
+    const wrap=document.getElementById("memberLessonList");
+    const videos=await dbGetAll();
+    const base=[
+      {title:"Welcome to Zayn's Look Maxxing",module:"Module 01 — Foundation",demo:true},
+      {title:"How to build your routine",module:"Module 01 — Foundation",demo:true},
+      {title:"Grooming foundations",module:"Module 02 — Grooming",demo:true}
+    ];
+    const items=[
+      ...base.map(x=>({...x,id:"demo-"+Math.random()})),
+      ...videos.map(v=>({id:v.id,title:v.title,module:v.module,blob:v.blob}))
+    ];
+    wrap.innerHTML=items.map((v,i)=>`
+      <div class="lesson">
+        <div class="lesson-thumb">${v.demo?"LESSON":"VIDEO"}</div>
+        <div class="lesson-main"><strong>${escapeHtml(v.title)}</strong><span>${escapeHtml(v.module)} ${v.demo?"<span class='pill'>Course</span>":"<span class='pill'>New</span>"}</span></div>
+        <button class="btn btn-dark" onclick='previewLesson(${JSON.stringify(v.id)})'>Open</button>
+      </div>`).join("");
+  }
+
+  async function previewLesson(id){
+    if(id.startsWith("demo-")){
+      openModal(`<div class="modal-top"><div><div class="eyebrow">Lesson Preview</div><h3 style="font-size:26px">This lesson is ready for Zayn's content.</h3></div><button class="close" onclick="closeModal()">×</button></div><div class="notice" style="margin-top:18px">Replace this placeholder lesson with Zayn's uploaded video from the admin area.</div>`);
+      return;
+    }
+    const videos=await dbGetAll(); const v=videos.find(x=>x.id===id); if(!v)return;
+    const url=URL.createObjectURL(v.blob);
+    openModal(`<div class="modal-top"><div><div class="eyebrow">${escapeHtml(v.module)}</div><h3 style="font-size:26px">${escapeHtml(v.title)}</h3></div><button class="close" onclick="closeModal();URL.revokeObjectURL('${url}')">×</button></div><video controls playsinline style="width:100%;margin-top:18px;border-radius:15px;background:#000" src="${url}"></video>`);
+  }
+
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); }
+
+  // Current session restore.
+  if(state.current?.role==="member") showMember();
+  if(state.current?.role==="admin") showAdmin();
+</script>
+</body>
+</html>
