@@ -12,33 +12,26 @@ async function upload(e){
  const form=e.currentTarget,file=videoFile.files[0],title=videoTitle.value.trim(),moduleId=videoModule.value;
  if(!file||!title||!moduleId)return alert("Choose a title, module and video.");
  const b=form.querySelector('button[type="submit"]');
- const b64=s=>btoa(unescape(encodeURIComponent(s)));
  try{
   b.disabled=true;b.textContent="Preparing…";
   const s=await api("video-upload",{method:"POST",body:JSON.stringify({size:file.size,name:file.name,contentType:file.type||"video/mp4"})});
-  const metadata=[
-    "bucketName "+b64(s.bucket),
-    "objectName "+b64(s.path),
-    "contentType "+b64(file.type||"video/mp4"),
-    "cacheControl "+b64("3600")
-  ].join(",");
-  const init=await fetch(s.endpoint,{
-    method:"POST",
-    headers:{"Tus-Resumable":"1.0.0","Upload-Length":String(file.size),"Upload-Metadata":metadata,"x-signature":s.token}
+  const r=await fetch(s.signedUrl,{
+    method:"PUT",
+    headers:{
+      "Content-Type":file.type||"video/mp4",
+      "Cache-Control":"max-age=3600"
+    },
+    body:file
   });
-  if(!init.ok)throw Error("Supabase Storage upload setup failed ("+init.status+").");
-  const uploadURL=init.headers.get("Location");
-  if(!uploadURL)throw Error("Supabase Storage did not return an upload URL.");
-  let off=Number(init.headers.get("Upload-Offset")||0),chunk=8*1024*1024;
-  while(off<file.size){
-    const part=file.slice(off,Math.min(off+chunk,file.size));
-    const r=await fetch(uploadURL,{method:"PATCH",headers:{"Tus-Resumable":"1.0.0","Upload-Offset":String(off),"Content-Type":"application/offset+octet-stream","x-signature":s.token},body:part});
-    if(!r.ok)throw Error("Video upload failed ("+r.status+").");
-    off=Number(r.headers.get("Upload-Offset")||off+part.size);
-    b.textContent="Uploading "+Math.round(off/file.size*100)+"%…";
+  if(!r.ok){
+    const msg=await r.text().catch(()=>"");
+    throw Error("Supabase Storage upload failed ("+r.status+")"+(msg?": "+msg:""));
   }
+  b.textContent="Publishing…";
   await api("lessons",{method:"POST",body:JSON.stringify({moduleId,title,videoPath:s.path,description:""})});
-  form.reset();alert("Video uploaded and lesson published.");await loadAdmin()
+  form.reset();
+  alert("Video uploaded and lesson published.");
+  await loadAdmin();
  }catch(e){fail(e)}finally{b.disabled=false;b.textContent="Upload video"}
 }
 window.zActivate=async id=>{if(!confirm("Activate this applicant as a member?"))return;try{const d=await api("applications/activate",{method:"POST",body:JSON.stringify({applicationId:id})});openModal('<div class="modal-top"><div><div class="eyebrow">Member activated</div><h3>Credentials generated</h3></div><button class="close" onclick="closeModal()">×</button></div><div class="notice success" style="margin-top:18px"><strong>Phone:</strong> '+esc(d.member.phone)+'<br><strong>Temporary password:</strong> '+esc(d.temporaryPassword)+'</div>');await loadAdmin()}catch(e){fail(e)}};
