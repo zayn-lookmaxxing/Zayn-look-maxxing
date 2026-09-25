@@ -163,8 +163,9 @@
 
 <nav class="nav">
   <div class="container nav-inner">
-    <div class="brand">ZAYN ACADEMY</div>
+    <a class="brand" href="#home" onclick="returnHome();return false;">ZAYN ACADEMY</a>
     <div class="nav-links">
+      <a href="#home" onclick="returnHome();return false;">Home</a>
       <a href="#story">Story</a>
       <a href="#learn">Academy</a>
       <a href="#results">Results</a>
@@ -178,7 +179,7 @@
 </nav>
 
 <main id="publicSite">
-  <section class="hero">
+  <section id="home" class="hero">
     <div class="container hero-grid">
       <div>
         <div class="eyebrow">Zayn's Look Maxxing · Members Only</div>
@@ -505,6 +506,15 @@
       state.current={role:"member",username:m.username}; saveState(); closeModal(); showMember();
     });
   },0);
+
+  function returnHome(){
+    closeModal();
+    document.getElementById("publicSite").style.display="block";
+    document.getElementById("memberArea").classList.remove("active");
+    document.getElementById("adminArea").classList.remove("active");
+    history.replaceState(null,"",location.pathname);
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
 
   function showMember(){
     document.getElementById("publicSite").style.display="none";
