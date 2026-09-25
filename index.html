@@ -36,6 +36,8 @@
   button{cursor:pointer}
   a{text-decoration:none;color:inherit}
   .container{width:min(1180px,92%);margin:auto}
+  html,body{max-width:100%;overflow-x:hidden}
+  img,video,iframe{max-width:100%;}
   .nav{
     position:sticky;top:0;z-index:50;
     backdrop-filter:blur(18px);
@@ -167,16 +169,59 @@
   .toast{position:fixed;right:18px;bottom:18px;background:#14171d;border:1px solid var(--line);padding:13px 16px;border-radius:14px;display:none;z-index:200}
   .toast.show{display:block}
   @media(max-width:900px){
+    .container{width:min(100% - 28px,1180px)}
+    .nav-inner{height:68px;gap:10px}
+    .brand{font-size:11px;letter-spacing:.14em;white-space:nowrap}
+    .nav-links{display:none}
+    .nav-inner>div:last-child{gap:6px!important}
+    .nav-inner .btn{padding:9px 11px;font-size:11px}
     .hero-grid,.admission-wrap,.feature-row,.admin-grid{grid-template-columns:1fr}
     .grid-3{grid-template-columns:1fr}
-    .result-grid{grid-template-columns:repeat(2,1fr)}
-    .nav-links{display:none}
-    .hero{padding-top:60px}
+    .grid-2{grid-template-columns:1fr}
+    .result-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+    .hero{padding:56px 0 52px}
+    section{padding:64px 0}
+    .hero-ctas{margin:24px 0 28px}
+    .photo-space{min-height:360px}
   }
   @media(max-width:600px){
-    h1{font-size:52px}.result-grid{grid-template-columns:1fr 1fr}.form-row{grid-template-columns:1fr}
-    .dash-top,.section-head{align-items:flex-start;flex-direction:column}
-    .photo-space{min-height:360px}.lesson-thumb{width:88px;height:60px}
+    .nav-inner{height:62px}
+    .brand{font-size:10px;letter-spacing:.10em;max-width:145px;overflow:hidden;text-overflow:ellipsis}
+    .nav-inner .btn{padding:8px 9px;font-size:10px}
+    h1{font-size:44px;line-height:.98;letter-spacing:-.045em}
+    .hero p{font-size:15px;line-height:1.55}
+    .eyebrow{font-size:10px;letter-spacing:.16em}
+    .hero-ctas .btn{width:100%;text-align:center}
+    .stats{gap:16px}
+    .stat strong{font-size:19px}
+    .stat span{font-size:11px}
+    .section-head{align-items:flex-start;flex-direction:column;gap:12px;margin-bottom:22px}
+    .section-head h2{font-size:34px}
+    .section-head p{font-size:13px}
+    .card{padding:18px;border-radius:18px}
+    .course-card{min-height:300px}
+    .course-card .thumb{height:155px}
+    .result-grid{grid-template-columns:1fr 1fr}
+    .result-grid .photo-space{min-height:175px}
+    .form-row{grid-template-columns:1fr}
+    input,select,textarea{font-size:16px}
+    .dash-top h2,.admin-header h2{font-size:36px}
+    .lesson{gap:10px;padding:12px}
+    .lesson-thumb{width:72px;height:56px;flex:none}
+    .lesson .btn{padding:9px 11px}
+    .modal{padding:12px}
+    .modal-card{padding:18px;border-radius:18px}
+    .video-shell{margin-top:12px}
+  }
+  @media(max-width:420px){
+    .brand{max-width:125px}
+    .nav-inner .btn{padding:8px 8px}
+    .nav-inner>div:last-child{gap:4px!important}
+    h1{font-size:39px}
+    .result-grid{grid-template-columns:1fr}
+    .result-grid .photo-space{min-height:220px}
+    .photo-space{min-height:300px}
+    section{padding:54px 0}
   }
 </style>
 </head>
@@ -184,7 +229,7 @@
 
 <nav class="nav">
   <div class="container nav-inner">
-    <a class="brand" href="#home" onclick="returnHome();return false;">ZAYN ACADEMY</a>
+    <a class="brand" href="#home" onclick="returnHome();return false;">Zayn's look maxxing</a>
     <div class="nav-links">
       <a href="#home" onclick="returnHome();return false;">Home</a>
       <a href="#story">Story</a>
