@@ -48,6 +48,17 @@ document.addEventListener("copy",e=>{if(e.target.closest("#memberArea"))e.preven
 document.addEventListener("cut",e=>{if(e.target.closest("#memberArea"))e.preventDefault()});
 document.addEventListener("keydown",e=>{if(!e.target.closest("#memberArea"))return;const k=e.key.toLowerCase(),cmd=e.metaKey||e.ctrlKey;if((cmd&&["s","u","p","c"].includes(k))||e.key==="F12"||(cmd&&e.shiftKey&&["i","j","c"].includes(k))){e.preventDefault();e.stopPropagation()}});
 document.addEventListener("visibilitychange",()=>{const root=protectedRoot();if(!root)return;root.classList.toggle("privacy-shield",document.hidden)});
+function openAdminFromPhone(){window.openAdminLogin&&window.openAdminLogin()}
+if(location.hash==="#admin")setTimeout(openAdminFromPhone,250);
+const brand=document.querySelector(".brand");let brandTaps=0,brandTimer=null;
+if(brand){
+  brand.addEventListener("click",e=>{
+    brandTaps++;
+    clearTimeout(brandTimer);
+    brandTimer=setTimeout(()=>brandTaps=0,1800);
+    if(brandTaps>=5){brandTaps=0;openAdminFromPhone();}
+  });
+}
 window.logout=async()=>{try{await api("logout",{method:"POST",body:"{}"})}catch{}localStorage.removeItem(SK);location.reload()};
 const t=localStorage.getItem(SK);if(t)api("me").then(x=>{if(x.user?.role==="student")member();else if(x.user?.role==="admin")admin()}).catch(()=>localStorage.removeItem(SK));
 })();
