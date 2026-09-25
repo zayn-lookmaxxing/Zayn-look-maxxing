@@ -78,6 +78,24 @@
   }
   .photo-space:before{content:"PHOTO";font-weight:900;letter-spacing:.3em;color:rgba(245,242,234,.18);font-size:42px}
   .photo-space small{position:absolute;bottom:20px;left:22px;color:#747a84;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  .photo-space.with-photo:before{display:none}
+  .hero .photo-space.with-photo{background-image:linear-gradient(180deg,rgba(9,10,12,.06),rgba(9,10,12,.35)),url("https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=1200&q=80");background-size:cover;background-position:center 28%}
+  #story .feature-row .card:first-child .photo-space.with-photo{background-image:linear-gradient(180deg,rgba(9,10,12,.08),rgba(9,10,12,.4)),url("https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=900&q=80");background-size:cover;background-position:center}
+  #story .feature-row .card:last-child .photo-space.with-photo{background-image:linear-gradient(180deg,rgba(9,10,12,.08),rgba(9,10,12,.32)),url("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=900&q=80");background-size:cover;background-position:center}
+  #learn:after{content:"";display:block;width:min(1180px,92%);height:220px;margin:28px auto 0;border-radius:22px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(9,10,12,.10),rgba(9,10,12,.28)),url("https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat;box-shadow:var(--shadow)}
+  .course-card .thumb{background:linear-gradient(180deg,rgba(10,12,16,.04),rgba(10,12,16,.35)),url("https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=80") center/cover no-repeat;color:transparent}
+  #results .result-grid .photo-space{background-size:cover;background-position:center}
+  #results .result-grid .photo-space:before{display:none}
+  #results .result-grid .photo-space:nth-child(1){background-image:url("https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=80)}
+  #results .result-grid .photo-space:nth-child(2){background-image:url("https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=700&q=80)}
+  #results .result-grid .photo-space:nth-child(3){background-image:url("https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=700&q=80)}
+  #results .result-grid .photo-space:nth-child(4){background-image:url("https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=700&q=80)}
+  #results .result-grid .photo-space:nth-child(5){background-image:url("https://images.unsplash.com/photo-1504593811423-6dd665756598?auto=format&fit=crop&w=700&q=80)}
+  #results .result-grid .photo-space:nth-child(6){background-image:url("https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=700&q=80)}
+  #results .result-grid .photo-space:nth-child(7){background-image:url("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80)}
+  #results .result-grid .photo-space:nth-child(8){background-image:url("https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=80)}
+  #admission .admission-wrap .card:first-child{background-image:linear-gradient(180deg,rgba(9,10,12,.34),rgba(9,10,12,.82)),url("https://images.unsplash.com/photo-1517832207067-4db24a2ae47c?auto=format&fit=crop&w=1200&q=80");background-size:cover;background-position:center}
+  #admission .admission-wrap .card:first-child p,#admission .admission-wrap .card:first-child h3{color:#fff}
   section{padding:90px 0}
   .section-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:35px}
   .section-head h2{margin:8px 0 0;font-size:clamp(34px,4vw,54px);letter-spacing:-.04em}
@@ -204,8 +222,8 @@
           <div class="stat"><strong>24/7</strong><span>Member access</span></div>
         </div>
       </div>
-      <div class="photo-space">
-        <small>Hero image space — add Zayn's official portrait here</small>
+      <div class="photo-space with-photo">
+        <small>Official hero image can be replaced later.</small>
       </div>
     </div>
   </section>
@@ -222,7 +240,7 @@
       <div class="feature-row">
         <div class="card">
           <div class="number">Before</div>
-          <div class="photo-space" style="min-height:300px;margin-top:15px"><small>Transformation photo space</small></div>
+          <div class="photo-space with-photo" style="min-height:300px;margin-top:15px"><small>Temporary image</small></div>
         </div>
         <div class="card">
           <div class="number">After</div>
