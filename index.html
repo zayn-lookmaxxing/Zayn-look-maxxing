@@ -111,9 +111,11 @@
   .course-card .thumb{height:170px;border-radius:16px;border:1px solid var(--line);margin-bottom:18px;background:linear-gradient(135deg,#1a1e23,#0a0c0f);display:flex;align-items:center;justify-content:center;color:#737984;font-size:12px;letter-spacing:.18em}
   .course-meta{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:10px}
   .price{font-size:24px;font-weight:900}
-  .result-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-  .result-grid .photo-space{min-height:230px;border-radius:18px;box-shadow:none}
-  .result-grid .photo-space:before{font-size:24px;color:rgba(245,242,234,.16)}
+  .result-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .result-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.01));}
+  .result-pair-card{min-width:0}
+  .result-pair-label{font-size:10px;color:var(--gold);letter-spacing:.16em;text-transform:uppercase;font-weight:800;margin:2px 4px 8px}
+  .result-photo{width:100%;aspect-ratio:3/4;display:block;object-fit:contain;object-position:center;background:#0d1014;border:1px solid var(--line);border-radius:14px}
   .quote{font-size:21px;max-width:860px;color:#ece8df}
   .admission-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:20px}
   form{display:grid;gap:14px}
@@ -202,8 +204,10 @@
     .card{padding:18px;border-radius:18px}
     .course-card{min-height:300px}
     .course-card .thumb{height:155px}
-    .result-grid{grid-template-columns:1fr 1fr}
-    .result-grid .photo-space{min-height:175px}
+    .result-grid{grid-template-columns:1fr;gap:12px}
+    .result-pair{gap:8px;padding:8px}
+    .result-pair-label{font-size:9px;margin:1px 3px 7px}
+    .result-photo{aspect-ratio:3/4;border-radius:12px}
     .form-row{grid-template-columns:1fr}
     input,select,textarea{font-size:16px}
     .dash-top h2,.admin-header h2{font-size:36px}
@@ -346,17 +350,25 @@
     <div class="container">
       <div class="section-head">
         <div><div class="eyebrow">04 · Results</div><h2>Real people. Real progress.</h2></div>
-        <p>These are intentionally photo-only spaces so the final website can use authentic approved member/result photography.</p>
+        <p>See each transformation as a clear before-and-after pair. Images stay fully visible so the face is not cropped on desktop or mobile.</p>
       </div>
       <div class="result-grid">
-        <div class="photo-space"><small>Result photo</small></div>
-        <div class="photo-space"><small>Result photo</small></div>
-        <div class="photo-space"><small>Result photo</small></div>
-        <div class="photo-space"><small>Result photo</small></div>
-        <div class="photo-space"><small>Result photo</small></div>
-        <div class="photo-space"><small>Result photo</small></div>
-        <div class="photo-space"><small>Result photo</small></div>
-        <div class="photo-space"><small>Result photo</small></div>
+        <div class="result-pair">
+          <div class="result-pair-card"><div class="result-pair-label">Before 1</div><img class="result-photo" src="/assets/before1.jpeg" alt="Before transformation 1"></div>
+          <div class="result-pair-card"><div class="result-pair-label">After 1</div><img class="result-photo" src="/assets/after1.jpeg" alt="After transformation 1"></div>
+        </div>
+        <div class="result-pair">
+          <div class="result-pair-card"><div class="result-pair-label">Before 2</div><img class="result-photo" src="/assets/before2.jpeg" alt="Before transformation 2"></div>
+          <div class="result-pair-card"><div class="result-pair-label">After 2</div><img class="result-photo" src="/assets/after2.jpeg" alt="After transformation 2"></div>
+        </div>
+        <div class="result-pair">
+          <div class="result-pair-card"><div class="result-pair-label">Before 3</div><img class="result-photo" src="/assets/before3.jpeg" alt="Before transformation 3"></div>
+          <div class="result-pair-card"><div class="result-pair-label">After 3</div><img class="result-photo" src="/assets/after3.jpeg" alt="After transformation 3"></div>
+        </div>
+        <div class="result-pair">
+          <div class="result-pair-card"><div class="result-pair-label">Before 4</div><img class="result-photo" src="/assets/before4.jpeg" alt="Before transformation 4"></div>
+          <div class="result-pair-card"><div class="result-pair-label">After 4</div><img class="result-photo" src="/assets/after4.jpeg" alt="After transformation 4"></div>
+        </div>
       </div>
     </div>
   </section>
