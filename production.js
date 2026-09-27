@@ -11,31 +11,50 @@ async function upload(e){
  e.preventDefault();
  const form=e.currentTarget,file=videoFile.files[0],title=videoTitle.value.trim(),moduleId=videoModule.value;
  if(!file||!title||!moduleId)return alert("Choose a title, module and video.");
+ if(!file.type.startsWith("video/"))return alert("Please choose a video file.");
  const b=form.querySelector('button[type="submit"]');
  try{
-  b.disabled=true;b.textContent="Preparing…";
-  const s=await api("video-upload",{method:"POST",body:JSON.stringify({size:file.size,name:file.name,contentType:file.type||"video/mp4"})});
-  const r=await fetch(s.signedUrl,{
-    method:"PUT",
-    headers:{
-      "Content-Type":file.type||"video/mp4",
-      "Cache-Control":"max-age=3600"
-    },
-    body:file
+  b.disabled=true;b.textContent="Preparing secure upload…";
+  const s=await api("mux-upload",{method:"POST",body:JSON.stringify({name:file.name,contentType:file.type,size:file.size})});
+  if(!s.uploadUrl||!s.uploadId)throw Error("Could not create the Mux upload.");
+  if(!window.UpChunk?.createUpload)throw Error("Large-video upload component failed to load. Refresh the page and try again.");
+  const up=UpChunk.createUpload({
+    endpoint:s.uploadUrl,
+    file,
+    chunkSize:5120,
+    dynamicChunkSize:true
   });
-  if(!r.ok){
-    const msg=await r.text().catch(()=>"");
-    throw Error("Supabase Storage upload failed ("+r.status+")"+(msg?": "+msg:""));
+  await new Promise((resolve,reject)=>{
+    up.on("progress",ev=>{
+      const pct=Math.max(0,Math.min(100,Number(ev.detail)||0));
+      b.textContent=`Uploading ${Math.round(pct)}%`;
+    });
+    up.on("success",resolve);
+    up.on("error",ev=>reject(ev?.detail||new Error("Mux upload failed.")));
+  });
+  b.textContent="Registering lesson…";
+  const lessonResp=await api("lessons",{method:"POST",body:JSON.stringify({moduleId,title,description:"",muxUploadId:s.uploadId})});
+  const lessonId=lessonResp.lesson?.id;
+  if(!lessonId)throw Error("Upload finished but the lesson could not be created.");
+  let ready=false, lastStatus=null;
+  for(let i=0;i<120;i++){
+    const st=await api("mux-status",{method:"POST",body:JSON.stringify({uploadId:s.uploadId,lessonId})});
+    lastStatus=st;
+    if(st.ready){ready=true;break;}
+    if(st.uploadStatus==="errored"||st.assetStatus==="errored")throw Error("Mux could not process this video.");
+    if(st.uploadStatus==="timed_out")throw Error("The Mux upload timed out.");
+    const progress=Number(st.assetStatus==="preparing"&&st.assetProgress)||0;
+    b.textContent=st.assetStatus==="preparing"&&progress>0?`Processing ${Math.round(progress)}%`:"Processing video…";
+    await new Promise(resolve=>setTimeout(resolve,3000));
   }
-  b.textContent="Publishing…";
-  await api("lessons",{method:"POST",body:JSON.stringify({moduleId,title,videoPath:s.path,description:""})});
+  if(!ready)throw Error("The video uploaded but is still processing. It will become available automatically once Mux finishes processing.");
   form.reset();
-  alert("Video uploaded and lesson published.");
+  alert("Video uploaded, processed and published.");
   await loadAdmin();
  }catch(e){fail(e)}finally{b.disabled=false;b.textContent="Upload video"}
 }
 window.zActivate=async id=>{if(!confirm("Activate this applicant as a member?"))return;try{const d=await api("applications/activate",{method:"POST",body:JSON.stringify({applicationId:id})});openModal('<div class="modal-top"><div><div class="eyebrow">Member activated</div><h3>Credentials generated</h3></div><button class="close" onclick="closeModal()">×</button></div><div class="notice success" style="margin-top:18px"><strong>Phone:</strong> '+esc(d.member.phone)+'<br><strong>Temporary password:</strong> '+esc(d.temporaryPassword)+'</div>');await loadAdmin()}catch(e){fail(e)}};
-window.zOpen=async(id)=>{if(!id)return alert("This lesson is unavailable.");try{const d=await api("video-token",{method:"POST",body:JSON.stringify({lessonId:id})});const u=window.__zaynMember||{};const wm=esc((u.full_name||"Private Member")+" • "+(u.phone||"Private")+" • DO NOT SHARE");openModal('<div class="modal-top"><div><div class="eyebrow">Private lesson</div><h3>Watch securely</h3></div><button class="close" onclick="closeModal()">×</button></div><div class="video-shell"><video controls playsinline disablePictureInPicture controlsList="nodownload noplaybackrate noremoteplayback" style="width:100%;aspect-ratio:16/9;border:0;border-radius:15px;background:#000;display:block;margin-top:18px" src="'+esc(d.signedUrl)+'"></video><div class="video-watermark-grid" aria-hidden="true"><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span></div></div><div class="legal protected-note">Private member content • personalized watermark • sharing is prohibited.</div><button class="btn" style="width:100%;margin-top:14px" onclick="zDone(\''+id+'\')">Mark lesson complete</button>')}catch(e){fail(e)}};
+window.zOpen=async(id)=>{if(!id)return alert("This lesson is unavailable.");try{const d=await api("video-token",{method:"POST",body:JSON.stringify({lessonId:id})});const u=window.__zaynMember||{};const wm=esc((u.full_name||"Private Member")+" • "+(u.phone||"Private")+" • DO NOT SHARE");const player=d.playbackType==="mux"?'<mux-player src="'+esc(d.signedUrl)+'" stream-type="on-demand" controls playsinline style="width:100%;aspect-ratio:16/9;border:0;border-radius:15px;background:#000;display:block;margin-top:18px"></mux-player>':'<video controls playsinline disablePictureInPicture controlsList="nodownload noplaybackrate noremoteplayback" style="width:100%;aspect-ratio:16/9;border:0;border-radius:15px;background:#000;display:block;margin-top:18px" src="'+esc(d.signedUrl)+'"></video>';openModal('<div class="modal-top"><div><div class="eyebrow">Private lesson</div><h3>Watch securely</h3></div><button class="close" onclick="closeModal()">×</button></div><div class="video-shell">'+player+'<div class="video-watermark-grid" aria-hidden="true"><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span></div></div><div class="legal protected-note">Private member content • personalized watermark • sharing is prohibited.</div><button class="btn" style="width:100%;margin-top:14px" onclick="zDone(\''+id+'\')">Mark lesson complete</button>')}catch(e){fail(e)}};
 window.zDone=async id=>{try{await api("progress",{method:"POST",body:JSON.stringify({lessonId:id,completed:true})});closeModal();member()}catch(e){fail(e)}};
 window.openAdminLogin=()=>{openModal('<div class="modal-top"><div><div class="eyebrow">Private Admin</div><h3>Zayn only.</h3></div><button class="close" onclick="closeModal()">×</button></div><form id="zAdmin" style="margin-top:18px"><label>Admin number<input id="zAP" required></label><label>Private password<input id="zPW" type="password" required></label><button class="btn" type="submit">Open Admin</button></form>');zAdmin.onsubmit=async e=>{e.preventDefault();try{const d=await api("login",{method:"POST",body:JSON.stringify({phone:zAP.value,password:zPW.value})});if(d.user.role!=="admin")throw Error("Admin access required.");save(d);closeModal();admin()}catch(e){fail(e)}}};
 memberLoginBtn.onclick=()=>{openModal('<div class="modal-top"><div><div class="eyebrow">Member Login</div><h3>Welcome back.</h3></div><button class="close" onclick="closeModal()">×</button></div><form id="zMember" style="margin-top:18px"><label>Phone number<input id="zMP" required inputmode="tel" placeholder="+91..."></label><label>Password<input id="zMpw" type="password" required placeholder="Member password"></label><button class="btn" type="submit">Enter Course</button><div class="legal">Use your phone number with the member password to access the course.</div></form>');zMember.onsubmit=async e=>{e.preventDefault();try{const d=await api("login",{method:"POST",body:JSON.stringify({phone:zMP.value,password:zMpw.value})});if(d.user.role!=="student")throw Error("Use member login for the course.");save(d);closeModal();member()}catch(e){fail(e)}}};
