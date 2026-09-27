@@ -21,8 +21,7 @@ async function upload(e){
   const up=UpChunk.createUpload({
     endpoint:s.uploadUrl,
     file,
-    chunkSize:5120,
-    dynamicChunkSize:true
+    chunkSize:5120
   });
   await new Promise((resolve,reject)=>{
     up.on("progress",ev=>{
