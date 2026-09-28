@@ -52,34 +52,55 @@ async function upload(e){
   await loadAdmin();
  }catch(e){fail(e)}finally{b.disabled=false;b.textContent="Upload video"}
 }
-window.copyCredentials=async(phone,password,button)=>{
-  const value=String(phone)+" / "+String(password);
-  const markCopied=()=>{if(button){button.textContent="Copied!";setTimeout(()=>button.textContent="Copy credentials",1600);}};
+function legacyCopyText(value){
+  const area=document.createElement("textarea");
+  area.value=value;
+  area.setAttribute("readonly","");
+  area.setAttribute("aria-hidden","true");
+  area.style.position="fixed";
+  area.style.left="0";
+  area.style.top="0";
+  area.style.width="2px";
+  area.style.height="2px";
+  area.style.padding="0";
+  area.style.border="0";
+  area.style.opacity="0.01";
+  area.style.zIndex="2147483647";
+  document.body.appendChild(area);
+  area.focus();
+  area.select();
+  area.setSelectionRange(0,area.value.length);
+  let copied=false;
+  try{copied=document.execCommand("copy")}catch{}
+  document.body.removeChild(area);
+  return copied;
+}
+
+function showCopyFallback(value,button){
+  if(button){button.textContent="Select text";}
+  const fallback=document.getElementById("credentialCopyFallback");
+  if(fallback){
+    fallback.style.display="block";
+    fallback.innerHTML='<strong>Copy manually:</strong><br><span style="user-select:text;-webkit-user-select:text">'+esc(value)+'</span>';
+  }
+}
+
+function copyCredentials(phone,password,button){
+  const value="Phone: "+String(phone)+"\nTemporary password: "+String(password);
+  if(legacyCopyText(value)){
+    if(button){button.textContent="Copied!";setTimeout(()=>button.textContent="Copy credentials",1600);}
+    return;
+  }
   try{
-    if(window.isSecureContext&&navigator.clipboard&&navigator.clipboard.writeText){
-      await navigator.clipboard.writeText(value);
-      markCopied();
+    if(window.isSecureContext&&navigator.clipboard&&typeof navigator.clipboard.writeText==="function"){
+      navigator.clipboard.writeText(value).then(()=>{
+        if(button){button.textContent="Copied!";setTimeout(()=>button.textContent="Copy credentials",1600);}
+      }).catch(()=>showCopyFallback(value,button));
       return;
     }
   }catch{}
-  const field=document.createElement("input");
-  field.type="text";
-  field.value=value;
-  field.setAttribute("readonly","");
-  field.style.position="fixed";
-  field.style.left="-9999px";
-  field.style.top="0";
-  field.style.opacity="1";
-  field.style.pointerEvents="none";
-  document.body.appendChild(field);
-  field.focus({preventScroll:true});
-  field.select();
-  field.setSelectionRange(0,field.value.length);
-  let ok=false;
-  try{ok=document.execCommand("copy")}catch{}
-  field.remove();
-  if(ok){markCopied();}
-  else if(button){button.textContent="Select & copy";const promptEl=document.getElementById("credentialCopyFallback");if(promptEl){promptEl.style.display="block";promptEl.textContent=value;}}};
+  showCopyFallback(value,button);
+}
 
 window.zActivate=async id=>{
   if(!confirm("Generate a new temporary password for this member?"))return;
@@ -92,10 +113,10 @@ window.zActivate=async id=>{
       '<br><strong>Temporary password:</strong> <span style="user-select:text;-webkit-user-select:text">'+esc(d.temporaryPassword)+'</span>'+
       '</div>'+
       '<div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">'+
-      '<button class="btn" id="copyCredentialsBtn">Copy credentials</button>'+
-      '<button class="btn btn-dark" onclick="closeModal()">Done</button>'+
+      '<button class="btn" id="copyCredentialsBtn" type="button">Copy credentials</button>'+
+      '<button class="btn btn-dark" onclick="closeModal()" type="button">Done</button>'+
       '</div>'+
-      '<div id="credentialCopyFallback" style="display:none;margin-top:10px;padding:10px;border:1px dashed var(--line);border-radius:12px;user-select:text;-webkit-user-select:text;word-break:break-all;font-size:13px"></div>'+
+      '<div id="credentialCopyFallback" style="display:none;margin-top:10px;padding:10px;border:1px dashed var(--line);border-radius:12px;user-select:text;-webkit-user-select:text;word-break:break-word;font-size:13px"></div>'+
       '<div class="legal" style="margin-top:10px">The temporary password works immediately. Ask the member to change it after login.</div>'
     );
     const copyBtn=document.getElementById("copyCredentialsBtn");
