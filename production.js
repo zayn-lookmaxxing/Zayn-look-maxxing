@@ -52,7 +52,44 @@ async function upload(e){
   await loadAdmin();
  }catch(e){fail(e)}finally{b.disabled=false;b.textContent="Upload video"}
 }
-window.zActivate=async id=>{if(!confirm("Generate a new temporary password for this member?"))return;try{const d=await api("applications/activate",{method:"POST",body:JSON.stringify({applicationId:id})});const creds=d.member.phone+" / "+d.temporaryPassword;const copyScript=JSON.stringify("navigator.clipboard.writeText("+JSON.stringify(creds)+").then(()=>this.textContent='Copied!')");openModal('<div class="modal-top"><div><div class="eyebrow">Member credentials</div><h3>Ready to send</h3></div><button class="close" onclick="closeModal()">×</button></div><div class="notice success" style="margin-top:18px"><strong>Phone:</strong> '+esc(d.member.phone)+'<br><strong>Temporary password:</strong> <span id="tempPw">'+esc(d.temporaryPassword)+'</span></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn" onclick='+copyScript+'>Copy credentials</button><button class="btn btn-dark" onclick="closeModal()">Done</button></div><div class="legal" style="margin-top:10px">The temporary password uses unambiguous characters and works immediately. Ask the member to change it after login.</div>');await loadAdmin()}catch(e){fail(e)}};
+window.copyCredentials=async(phone,password,button)=>{
+  const text=phone+" / "+password;
+  try{
+    await navigator.clipboard.writeText(text);
+    if(button)button.textContent="Copied!";
+  }catch{
+    const ta=document.createElement("textarea");
+    ta.value=text;
+    ta.style.position="fixed";
+    ta.style.opacity="0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+    if(button)button.textContent="Copied!";
+  }
+  setTimeout(()=>{if(button)button.textContent="Copy credentials"},1500);
+};
+
+window.zActivate=async id=>{
+  if(!confirm("Generate a new temporary password for this member?"))return;
+  try{
+    const d=await api("applications/activate",{method:"POST",body:JSON.stringify({applicationId:id})});
+    openModal(
+      '<div class="modal-top"><div><div class="eyebrow">Member credentials</div><h3>Ready to send</h3></div><button class="close" onclick="closeModal()">×</button></div>'+
+      '<div class="notice success" style="margin-top:18px">'+
+      '<strong>Phone:</strong> '+esc(d.member.phone)+
+      '<br><strong>Temporary password:</strong> <span style="user-select:text;-webkit-user-select:text">'+esc(d.temporaryPassword)+'</span>'+
+      '</div>'+
+      '<div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">'+
+      '<button class="btn" onclick="copyCredentials('+JSON.stringify(d.member.phone)+','+JSON.stringify(d.temporaryPassword)+',this)">Copy credentials</button>'+
+      '<button class="btn btn-dark" onclick="closeModal()">Done</button>'+
+      '</div>'+
+      '<div class="legal" style="margin-top:10px">The temporary password works immediately. Ask the member to change it after login.</div>'
+    );
+    await loadAdmin();
+  }catch(e){fail(e)}
+};
 window.zOpen=async(id)=>{if(!id)return alert("This lesson is unavailable.");try{const d=await api("video-token",{method:"POST",body:JSON.stringify({lessonId:id})});const u=window.__zaynMember||{};const wm=esc((u.full_name||"Private Member")+" • "+(u.phone||"Private")+" • DO NOT SHARE");const player=d.playbackType==="mux"?'<mux-player src="'+esc(d.signedUrl)+'" stream-type="on-demand" controls playsinline style="width:100%;aspect-ratio:16/9;border:0;border-radius:15px;background:#000;display:block;margin-top:18px"></mux-player>':'<video controls playsinline disablePictureInPicture controlsList="nodownload noplaybackrate noremoteplayback" style="width:100%;aspect-ratio:16/9;border:0;border-radius:15px;background:#000;display:block;margin-top:18px" src="'+esc(d.signedUrl)+'"></video>';openModal('<div class="modal-top"><div><div class="eyebrow">Private lesson</div><h3>Watch securely</h3></div><button class="close" onclick="closeModal()">×</button></div><div class="video-shell">'+player+'<div class="video-watermark-grid" aria-hidden="true"><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span><span>'+wm+'</span></div></div><div class="legal protected-note">Private member content • personalized watermark • sharing is prohibited.</div><button class="btn" style="width:100%;margin-top:14px" onclick="zDone(\''+id+'\')">Mark lesson complete</button>')}catch(e){fail(e)}};
 window.zDone=async id=>{try{await api("progress",{method:"POST",body:JSON.stringify({lessonId:id,completed:true})});closeModal();member()}catch(e){fail(e)}};
 window.openAdminLogin=()=>{openModal('<div class="modal-top"><div><div class="eyebrow">Private Admin</div><h3>Zayn only.</h3></div><button class="close" onclick="closeModal()">×</button></div><form id="zAdmin" style="margin-top:18px"><label>Admin number<input id="zAP" required></label><label>Private password<input id="zPW" type="password" required></label><button class="btn" type="submit">Open Admin</button></form>');zAdmin.onsubmit=async e=>{e.preventDefault();try{const d=await api("login",{method:"POST",body:JSON.stringify({phone:zAP.value,password:zPW.value})});if(d.user.role!=="admin")throw Error("Admin access required.");save(d);closeModal();admin()}catch(e){fail(e)}}};
